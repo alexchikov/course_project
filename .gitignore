@@ -1,0 +1,11 @@
+/dags/config.yaml
+/.venv/
+.idea/
+data/
+logs/
+/airflow.cfg
+/airflow.db
+/airflow-webserver.pid
+/webserver_config.py
+/spark-warehouse/
+/dags/jars/
