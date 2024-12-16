@@ -7,9 +7,9 @@ from utils.settings import Settings
 import os
 
 
-DAG_ID = "etl_moex_sec"
-START = datetime(2013, 1, 1, 0, 0, 0)
-DESCRIPTION = "DAG for ETL processing MOEX data"
+DAG_ID = "etl_moex_history"
+START = datetime(2018, 1, 1, 0, 0, 0)
+DESCRIPTION = "DAG for ETL processing MOEX quotas data"
 DEFAULT_ARGS = {
     "owner": "alexc",
     "retries": 2,
@@ -19,10 +19,7 @@ DEFAULT_ARGS = {
     "depends_on_past": True,
 }
 CURRENT_DATE = "{{ execution_date.strftime('%Y-%m-%d') }}"
-FILENAME = f"moex_security_{CURRENT_DATE.replace('-', '')}.json"
-CONFIG_SPARK = {
-    'spark.app.name': 'etl_moex_securities'
-}
+FILENAME = f"moex_history_{CURRENT_DATE.replace('-', '')}.json"
 
 with DAG(
     dag_id=DAG_ID,
@@ -32,7 +29,7 @@ with DAG(
     schedule="@daily",
     catchup=True,
     tags=["moex"],
-    on_failure_callback=TelegramNotifier(message='dag_failed',
+    on_failure_callback=TelegramNotifier(message='dag failed',
                                          bot_token=Settings.BOT_TOKEN,
                                          chat_id=Settings.CHAT_ID)
 ) as dag:
@@ -42,13 +39,12 @@ with DAG(
 
     extract = BashOperator(dag=dag,
                            task_id='extract',
-                           bash_command=f"curl {Settings.MOEX_SECURITIES_URL}?date={CURRENT_DATE} --create-dirs -o ~/data/{FILENAME}")
+                           bash_command=f"curl {Settings.MOEX_HISTORY_URL}?date={CURRENT_DATE} --create-dirs -o ~/data/{FILENAME}")
 
     submit = SparkSubmitOperator(dag=dag,
                                  task_id='submit',
-                                 application=f'{os.environ["HOME"]}/dags/utils/moex_securities.py',
+                                 application=f'{os.environ["HOME"]}/dags/utils/moex_quotas.py',
                                  conn_id='spark_default',
-                                 conf=CONFIG_SPARK,
                                  application_args=['--filename', FILENAME])
 
     remove_file = BashOperator(dag=dag,

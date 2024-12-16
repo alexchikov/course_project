@@ -1,18 +1,18 @@
 from airflow.utils.context import Context
 from airflow.notifications.basenotifier import BaseNotifier
 from telegram import Bot
-from utils.settings import Settings
 import asyncio
 
 
 class TelegramNotifier(BaseNotifier):
-    template_fields = ("_message", )
+    template_fields = ("_message", "_token",)
 
-    def __init__(self, message: str):
+    def __init__(self, message: str, bot_token: str, chat_id: str):
         super().__init__()
         self._message = message
-        self._chat_id = Settings.CHAT_ID
-        self._bot = Bot(token=Settings.BOT_TOKEN)
+        self._token = bot_token
+        self._chat_id = chat_id
+        self._bot = Bot(token=self._token)
 
     async def send_message(self, message: str) -> None:
         await self._bot.send_message(self._chat_id, text="".join(message), parse_mode='html')
@@ -22,9 +22,9 @@ class TelegramNotifier(BaseNotifier):
         task_id = context['ti'].task_id
         dag_state = context['ti'].state
         run_datetime = context['ti'].execution_date
-        message = (f"<b>DAG ID</b>: {dag_id}\n" +
-                   f"<b>Task ID</b>: {task_id}\n" +
-                   f"<b>DAG state</b>: {dag_state}\n" +
-                   f"<b>Run datetime</b>: {run_datetime}\n" +
-                   f"<b>{self._message}<b>")
+        message = (f"<b>DAG ID</b>: {dag_id} \n",
+                   f"<b>Task ID</b>: {task_id} \n"
+                   f"<b>DAG state</b>: {dag_state} \n"
+                   f"<b>Run datetime</b>: {run_datetime} \n",
+                   self._message)
         asyncio.run(self.send_message("".join(message)))

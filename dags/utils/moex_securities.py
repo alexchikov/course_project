@@ -5,6 +5,7 @@ import os
 import json
 import argparse
 
+
 parser = argparse.ArgumentParser()
 parser.add_argument("--filename", help="Name of target file")
 args = parser.parse_args()
@@ -17,8 +18,9 @@ result_data = data['boards']
 config = SparkConf().set("spark.app.name", "etl_moex_securities") \
     .set("spark.master", "local[*]") \
     .set('spark.driver.extraClassPath',
-         'dags/jars/postgresql-42.6.1.jar') \
-    .set("spark.jars", "dags/jars/postgresql-42.6.1.jar")
+         f'{os.environ["HOME"]}/dags/jars/postgresql-42.6.1.jar') \
+    .set("spark.jars", f"{os.environ['HOME']}/dags/jars/postgresql-42.6.1.jar") \
+    .set("spark.jars.packages","org.postgresql:postgresql:42.6.1")
 spark = (SparkSession.builder.master("local[*]")
          .config(conf=config)
          .getOrCreate())
@@ -30,7 +32,7 @@ sdf_securities.write.format("jdbc") \
     .option("url", Settings.JDBC_CONNECTION_URL) \
     .option("user", Settings.JDBC_USER) \
     .option("password", Settings.JDBC_PASSWORD) \
-    .option("driver", "org.postgresql.Driver") \
     .option("dbtable", f"moex.{Settings.JDBC_TABLE_SECURITIES}") \
+    .option("driver", "org.postgresql.Driver") \
     .mode("overwrite") \
     .save()
