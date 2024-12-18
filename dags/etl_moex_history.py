@@ -7,7 +7,7 @@ from utils.settings import Settings
 import os
 
 
-DAG_ID = "etl_moex_history"
+DAG_ID = "etl_moex_quotas_history"
 START = datetime(2018, 1, 1, 0, 0, 0)
 DESCRIPTION = "DAG for ETL processing MOEX quotas data"
 DEFAULT_ARGS = {

@@ -1,8 +1,8 @@
 from pyspark import SparkConf
 from pyspark.sql import SparkSession
 from pyspark.sql import functions as f
+from pyspark.sql.types import StructType, StructField, StringType, DoubleType, IntegerType
 from settings import Settings
-import sys
 import logging
 import os
 import json
@@ -14,7 +14,9 @@ parser.add_argument("--filename", help="Name of target file")
 args = parser.parse_args()
 
 with open(f'{os.environ["HOME"]}/data/{args.filename}') as file:
-    data = json.load(file)
+    data = json.load(file,
+                     parse_int=False,
+                     parse_float=False)
 
 result_data = data['history']
 
@@ -32,8 +34,34 @@ else:
              .config(conf=config)
              .getOrCreate())
 
+    schema = StructType([
+        StructField("boardid", StringType(), True),
+        StructField("tradedate", StringType(), True),
+        StructField("shortname", StringType(), True),
+        StructField("secid", StringType(), True),
+        StructField("numtrades", StringType(), True),
+        StructField("value", StringType(), True),
+        StructField("open", StringType(), True),
+        StructField("low", StringType(), True),
+        StructField("high", StringType(), True),
+        StructField("legalcloseprice", StringType(), True),
+        StructField("waprice", StringType(), True),
+        StructField("close", StringType(), True),
+        StructField("volume", StringType(), True),
+        StructField("marketprice2", StringType(), True),
+        StructField("marketprice3", StringType(), True),
+        StructField("admittedquote", StringType(), True),
+        StructField("mp2valtrd", StringType(), True),
+        StructField("marketprice3tradesvalue", StringType(), True),
+        StructField("admittedvalue", StringType(), True),
+        StructField("waval", StringType(), True),
+        StructField("tradingsession", StringType(), True),
+        StructField("currencyid", StringType(), True),
+        StructField("trendclspr", StringType(), True)
+    ])
+
     history = spark.sparkContext.parallelize(list(map(tuple, [x for x in result_data['data']])))
-    sdf_history = history.toDF(result_data['columns'])
+    sdf_history = spark.createDataFrame(history, schema)
 
     sdf_history.write.format("jdbc") \
         .option("url", Settings.JDBC_CONNECTION_URL) \
