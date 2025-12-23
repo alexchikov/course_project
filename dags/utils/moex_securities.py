@@ -14,7 +14,7 @@ with open(f'{os.environ["HOME"]}/data/{args.filename}') as file:
     data = json.load(file)
 
 result_data = data['boards']
-
+#
 config = SparkConf().set("spark.app.name", "etl_moex_securities") \
     .set("spark.master", "local[*]") \
     .set('spark.driver.extraClassPath',

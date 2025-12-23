@@ -30,7 +30,7 @@ with DAG(
     description=DESCRIPTION,
     default_args=DEFAULT_ARGS,
     schedule="@daily",
-    catchup=True,
+    catchup=True,  #
     tags=["moex"],
     on_failure_callback=TelegramNotifier(message='dag_failed',
                                          bot_token=Settings.BOT_TOKEN,

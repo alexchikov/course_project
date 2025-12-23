@@ -10,7 +10,7 @@ DAG_ID = "etl_moex_agg"
 START = datetime(2018, 1, 1, 0, 0, 0)
 DESCRIPTION = "DAG for ETL processing MOEX data aggregates"
 DEFAULT_ARGS = {
-    "owner": "alexc",
+    "owner": "alexc",  #
     "retries": 2,
     "retry_delay": timedelta(minutes=5),
     "email_on_failure": False,

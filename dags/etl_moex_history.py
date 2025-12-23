@@ -26,7 +26,7 @@ with DAG(
     start_date=START,
     description=DESCRIPTION,
     default_args=DEFAULT_ARGS,
-    schedule="@daily",
+    schedule="@daily",  #
     catchup=True,
     tags=["moex"],
     on_failure_callback=TelegramNotifier(message='dag failed',

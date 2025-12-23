@@ -5,7 +5,7 @@ import asyncio
 
 
 class TelegramNotifier(BaseNotifier):
-    template_fields = ("_message", "_token",)
+    template_fields = ("_message", "_token",)  #
 
     def __init__(self, message: str, bot_token: str, chat_id: str):
         super().__init__()

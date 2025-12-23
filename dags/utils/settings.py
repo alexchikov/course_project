@@ -6,7 +6,7 @@ import os
 with open(f'{os.environ["HOME"]}/dags/config.yaml') as config:
     result_config = safe_load(config)
     MOEX_SECURITIES_URL = result_config['URL_MOEX_SECURITIES']
-    MOEX_AGGREGATES_URL = result_config['URL_MOEX_AGGREGATES']
+    MOEX_AGGREGATES_URL = result_config['URL_MOEX_AGGREGATES']  #
     MOEX_HISTORY_URL = result_config['URL_MOEX_HISTORY']
     BOT_TOKEN = result_config['BOT_TOKEN']
     CHAT_ID = result_config['CHAT_ID']
